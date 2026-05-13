@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Free Moon Reading</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --deep-navy: #04061a;
+    --midnight: #080c2a;
+    --violet: #1a0a3a;
+    --silver: #d4dff5;
+    --cream: #f5efe0;
+    --glow: rgba(201,168,76,0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep-navy);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ─── STARFIELD ─── */
+  .stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--d) ease-in-out infinite alternate;
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    from { opacity: var(--min-op); transform: scale(1); }
+    to   { opacity: var(--max-op); transform: scale(1.4); }
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px 40px;
+    background: radial-gradient(ellipse 80% 60% at 50% 30%, #1a0a3a 0%, transparent 70%);
+  }
+
+  /* ─── MOON ─── */
+  .moon-wrap {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin-bottom: 40px;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-16px); }
+  }
+  .moon {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 38%, #f5ecd0 0%, #d4b96a 40%, #8a6a20 100%);
+    box-shadow:
+      0 0 60px 20px rgba(201,168,76,0.4),
+      0 0 120px 40px rgba(201,168,76,0.15),
+      inset -30px -20px 60px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .moon::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 65% 65%, transparent 55%, rgba(0,0,0,0.35) 100%);
+  }
+  /* craters */
+  .crater {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.12);
+    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.25);
+  }
+  .c1 { width: 32px; height: 32px; top: 30%; left: 20%; }
+  .c2 { width: 18px; height: 18px; top: 55%; left: 50%; }
+  .c3 { width: 24px; height: 24px; top: 20%; left: 60%; }
+  .c4 { width: 12px; height: 12px; top: 65%; left: 30%; }
+
+  /* ring around moon */
+  .moon-ring {
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(201,168,76,0.3);
+    animation: ring-pulse 4s ease-in-out infinite;
+  }
+  .moon-ring2 {
+    position: absolute;
+    inset: -36px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.15);
+    animation: ring-pulse 4s ease-in-out infinite 0.8s;
+  }
+  @keyframes ring-pulse {
+    0%,100% { opacity: 0.4; transform: scale(1); }
+    50%      { opacity: 1;   transform: scale(1.04); }
+  }
+
+  /* ─── ZODIAC SYMBOLS ─── */
+  .zodiac-orbit {
+    position: absolute;
+    inset: -80px;
+    border-radius: 50%;
+    animation: orbit 30s linear infinite;
+  }
+  @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .zodiac-symbol {
+    position: absolute;
+    font-size: 18px;
+    color: var(--gold);
+    opacity: 0.6;
+    top: 50%; left: 50%;
+    transform-origin: 0 0;
+  }
+
+  /* ─── HEADLINE ─── */
+  .eyebrow {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 11px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    animation: fadeUp 1s ease both 0.3s;
+  }
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(28px, 6vw, 58px);
+    line-height: 1.15;
+    margin-bottom: 20px;
+    background: linear-gradient(160deg, var(--cream) 30%, var(--gold-light) 70%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeUp 1s ease both 0.5s;
+  }
+  h1 span {
+    display: block;
+    font-size: 0.55em;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    -webkit-text-fill-color: var(--gold-light);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .free-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #1a0a00;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-left: 8px;
+    vertical-align: middle;
+    box-shadow: 0 0 18px var(--glow);
+    position: relative;
+    top: -4px;
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--silver);
+    max-width: 560px;
+    line-height: 1.7;
+    margin: 0 auto 48px;
+    animation: fadeUp 1s ease both 0.7s;
+  }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 48px;
+    animation: fadeUp 1s ease both 0.8s;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    max-width: 120px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+  .divider-line.right { background: linear-gradient(90deg, var(--gold), transparent); }
+  .divider-symbol { color: var(--gold); font-size: 22px; }
+
+  /* ─── CTA ─── */
+  .cta-wrap {
+    animation: fadeUp 1s ease both 1s;
+  }
+  .cta-btn {
+    display: inline-block;
+    text-decoration: none;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(13px, 2vw, 16px);
+    letter-spacing: 2px;
+    color: #1a0a00;
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, #a07820 100%);
+    padding: 18px 48px;
+    border-radius: 3px;
+    box-shadow:
+      0 0 30px var(--glow),
+      0 4px 24px rgba(0,0,0,0.5);
+    transition: transform 0.25s, box-shadow 0.25s, filter 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .cta-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 0 50px rgba(201,168,76,0.6), 0 8px 32px rgba(0,0,0,0.6);
+    filter: brightness(1.1);
+  }
+  .cta-btn:active { transform: translateY(-1px) scale(1.01); }
+
+  .cta-sub {
+    margin-top: 16px;
+    font-size: 13px;
+    font-style: italic;
+    color: rgba(201,168,76,0.7);
+    letter-spacing: 1px;
+  }
+
+  /* ─── FEATURES ─── */
+  .features {
+    position: relative;
+    z-index: 1;
+    padding: 80px 24px;
+    background: linear-gradient(180deg, transparent, rgba(26,10,58,0.6) 20%, rgba(26,10,58,0.6) 80%, transparent);
+  }
+  .features-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 40px;
+  }
+  .feature-card {
+    text-align: center;
+    padding: 36px 28px;
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.02);
+    backdrop-filter: blur(6px);
+    transition: border-color 0.3s, transform 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .feature-card:hover {
+    border-color: rgba(201,168,76,0.4);
+    transform: translateY(-4px);
+  }
+  .feature-icon {
+    font-size: 42px;
+    margin-bottom: 18px;
+    display: block;
+    filter: drop-shadow(0 0 12px var(--glow));
+  }
+  .feature-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .feature-text {
+    font-size: 15px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--silver);
+    line-height: 1.7;
+  }
+
+  /* ─── TESTIMONIALS ─── */
+  .testimonials {
+    position: relative;
+    z-index: 1;
+    padding: 60px 24px 80px;
+    text-align: center;
+  }
+  .section-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(16px, 3vw, 24px);
+    color: var(--gold);
+    margin-bottom: 48px;
+    letter-spacing: 2px;
+  }
+  .testimonials-grid {
+    max-width: 860px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 28px;
+  }
+  .testimonial {
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.12);
+    border-radius: 4px;
+    padding: 28px 24px;
+    text-align: left;
+    position: relative;
+  }
+  .testimonial::before {
+    content: '"';
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 64px;
+    color: var(--gold);
+    opacity: 0.2;
+    position: absolute;
+    top: 8px; left: 16px;
+    line-height: 1;
+  }
+  .testimonial-text {
+    font-size: 15px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--silver);
+    line-height: 1.75;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .testimonial-author {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+  .stars-rating { color: var(--gold); font-size: 13px; margin-bottom: 8px; }
+
+  /* ─── BOTTOM CTA ─── */
+  .bottom-cta {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 60px 24px 80px;
+    background: radial-gradient(ellipse 80% 100% at 50% 100%, #1a0a3a 0%, transparent 70%);
+  }
+  .bottom-cta h2 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(20px, 4vw, 36px);
+    color: var(--cream);
+    margin-bottom: 20px;
+  }
+  .bottom-cta p {
+    font-size: 17px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--silver);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 1px;
+    border-top: 1px solid rgba(201,168,76,0.08);
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── GLOW PULSE on body BG ─── */
+  .bg-glow {
+    position: fixed;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(100,60,200,0.06) 0%, transparent 70%);
+    top: -200px; left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: bgGlow 8s ease-in-out infinite alternate;
+  }
+  @keyframes bgGlow {
+    from { opacity: 0.5; transform: translateX(-50%) scale(1); }
+    to   { opacity: 1;   transform: translateX(-50%) scale(1.3); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="stars" id="stars"></div>
+
+<!-- ══════════ HERO ══════════ -->
+<section class="hero">
+
+  <div class="moon-wrap">
+    <div class="moon">
+      <div class="crater c1"></div>
+      <div class="crater c2"></div>
+      <div class="crater c3"></div>
+      <div class="crater c4"></div>
+    </div>
+    <div class="moon-ring"></div>
+    <div class="moon-ring2"></div>
+    <div class="zodiac-orbit" id="zodiacOrbit"></div>
+  </div>
+
+  <p class="eyebrow">✦ Ancient Wisdom · Cosmic Insight ✦</p>
+
+  <h1>
+    <span>Your Personalized</span>
+    Moon Reading <span class="free-badge">FREE</span>
+  </h1>
+
+  <p class="subtitle">
+    Discover the secret depths of your personality, your relationships,
+    and your true purpose — written in the stars at the moment of your birth.
+  </p>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-symbol">☽</span>
+    <div class="divider-line right"></div>
+  </div>
+
+  <div class="cta-wrap">
+    <!-- ★ REMPLACE CE LIEN PAR TON LIEN D'AFFILIATION ★ -->
+    <a href="https://d980c7ew1m66l23hrn9emdqmeq.hop.clickbank.net" class="cta-btn" target="_blank" rel="noopener">
+      ✦ &nbsp; Reveal My Moon Reading &nbsp; ✦
+    </a>
+    <p class="cta-sub">100% Free · No Credit Card Required · Instant Access</p>
+  </div>
+
+</section>
+
+<!-- ══════════ FEATURES ══════════ -->
+<section class="features">
+  <div class="features-inner">
+
+    <div class="feature-card">
+      <span class="feature-icon">🌙</span>
+      <div class="feature-title">Your Moon Sign</div>
+      <p class="feature-text">Uncover the lunar energy that shapes your deepest emotions and inner world — hidden in plain sight since birth.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">💫</span>
+      <div class="feature-title">Relationships & Love</div>
+      <p class="feature-text">Understand why you connect with certain people and discover what the cosmos says about your ideal partner.</p>
+    </div>
+
+    <div class="feature-card">
+      <span class="feature-icon">🔮</span>
+      <div class="feature-title">True Life Purpose</div>
+      <p class="feature-text">The moon at your birth whispered your destiny. Your personalized reading brings that message to light.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ TESTIMONIALS ══════════ -->
+<section class="testimonials">
+  <h2 class="section-title">What People Are Saying</h2>
+  <div class="testimonials-grid">
+
+    <div class="testimonial">
+      <div class="stars-rating">★★★★★</div>
+      <p class="testimonial-text">I was skeptical at first, but my Moon Reading described my personality with an accuracy that left me speechless. It felt like someone finally understood me.</p>
+      <div class="testimonial-author">— Sarah M., Scorpio Rising</div>
+    </div>
+
+    <div class="testimonial">
+      <div class="stars-rating">★★★★★</div>
+      <p class="testimonial-text">This reading gave me clarity on my relationship patterns that years of searching couldn't provide. Absolutely life-changing.</p>
+      <div class="testimonial-author">— James T., Pisces Moon</div>
+    </div>
+
+    <div class="testimonial">
+      <div class="stars-rating">★★★★★</div>
+      <p class="testimonial-text">I've shared it with all my friends. Every single one of them said "how did they know?" — genuinely astonishing insight.</p>
+      <div class="testimonial-author">— Layla K., Cancer Sun</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════ BOTTOM CTA ══════════ -->
+<section class="bottom-cta">
+  <h2>The Moon Has a Message for You</h2>
+  <p>Your free, personalized reading is waiting. It takes only moments to unlock — and what you discover may change everything.</p>
+
+  <!-- ★ REMPLACE CE LIEN PAR TON LIEN D'AFFILIATION ★ -->
+  <a href="https://d980c7ew1m66l23hrn9emdqmeq.hop.clickbank.net" class="cta-btn" target="_blank" rel="noopener">
+    ✦ &nbsp; Get My Free Reading Now &nbsp; ✦
+  </a>
+</section>
+
+<footer>
+  &copy; 2025 · Moon Reading · All Rights Reserved
+  &nbsp;·&nbsp; This is an affiliate page
+</footer>
+
+<script>
+  // ── Generate starfield ──
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 200; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2.5 + 0.5;
+    const dur  = (Math.random() * 4 + 2).toFixed(1);
+    const minOp = (Math.random() * 0.2).toFixed(2);
+    const maxOp = (Math.random() * 0.6 + 0.3).toFixed(2);
+    s.style.cssText = `
+      width:${size}px; height:${size}px;
+      top:${Math.random()*100}%; left:${Math.random()*100}%;
+      --d:${dur}s; --min-op:${minOp}; --max-op:${maxOp};
+      animation-delay:${(Math.random()*6).toFixed(1)}s;
+    `;
+    container.appendChild(s);
+  }
+
+  // ── Zodiac orbit ──
+  const symbols = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  const orbit = document.getElementById('zodiacOrbit');
+  const r = 150; // orbit radius from center
+  symbols.forEach((sym, i) => {
+    const span = document.createElement('span');
+    span.className = 'zodiac-symbol';
+    span.textContent = sym;
+    const angle = (i / symbols.length) * 2 * Math.PI;
+    // position around circle center (orbit div is 2r wide, center at r,r)
+    const cx = r + r * Math.cos(angle);
+    const cy = r + r * Math.sin(angle);
+    span.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      transform: translate(-50%, -50%) rotate(${i * 30}deg);
+      animation: counter-orbit 30s linear infinite;
+    `;
+    orbit.appendChild(span);
+  });
+
+  // counter-rotate symbols so they stay upright
+  const style = document.createElement('style');
+  style.textContent = `@keyframes counter-orbit {
+    from { transform: translate(-50%,-50%) rotate(0deg); }
+    to   { transform: translate(-50%,-50%) rotate(-360deg); }
+  }`;
+  document.head.appendChild(style);
+</script>
+</body>
+</html>
